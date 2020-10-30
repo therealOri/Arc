@@ -1,2 +1,5 @@
 # Arc
-A discord bot for creating and deleting private dicord channels.
+Discord Bot for making and deleting private discord channels
+
+
+Made with Python3 and requires 3.8+ to run.
