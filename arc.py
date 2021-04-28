@@ -70,21 +70,6 @@ async def info(ctx):
 
 
 
-#pass_context=True
-@client.command()
-async def create(ctx, *, arg, ):
-    guild = ctx.guild
-    member = ctx.author
-    overwrites = {
-        guild.default_role: discord.PermissionOverwrite(read_messages=False),
-        guild.me: discord.PermissionOverwrite(read_messages=True, send_messages=True),
-        member: discord.PermissionOverwrite(read_messages=True, send_messages=True, manage_permissions=True)
-    }
-    channel = await guild.create_text_channel(arg, overwrites=overwrites)
-    await ctx.author.send(f"Your new channel `{arg}` has been made! Go check it out!")
-    await asyncio.sleep(20)
-    await ctx.message.delete()
-
 #https://discordapp.com/oauth2/authorize?client_id=771097019397701632&scope=bot&permissions=8"
 @client.command()
 async def invite(ctx):
@@ -98,19 +83,46 @@ async def invite(ctx):
     invembed.set_author(name="Add me")
     invembed.add_field(name="My Invite Link", value = "[Invite](https://discordapp.com/oauth2/authorize?client_id=771097019397701632&scope=bot&permissions=8)", inline=False)
     await ctx.send(embed=invembed)
+        
+        
+        
+        
+@client.command()
+async def create(ctx, *, arg, ):
+    if ctx.message.author.guild_permissions.administrator or ctx.message.author.guild_permissions.manage_channels: #perms can be changed
+        guild = ctx.guild
+        member = ctx.author
+        overwrites = {
+            guild.default_role: discord.PermissionOverwrite(read_messages=False),
+            guild.me: discord.PermissionOverwrite(read_messages=True, send_messages=True),
+            member: discord.PermissionOverwrite(read_messages=True, send_messages=True, manage_permissions=True)
+            }
+        channel = await guild.create_text_channel(arg, overwrites=overwrites)
+        embed = discord.Embed(title="Success!", description=f"The channel `{arg}` has been succesfully created! Go check it out!", color=discord.Color.green())
+        await ctx.send(embed=embed)
+        await asyncio.sleep(20)
+        await ctx.message.delete()
+    else:
+        embed = discord.Embed(title="Permission Denied.", description="You don't have permission to use this command.", color=discord.Color.red())
+        await ctx.send(embed=embed)
+
 
 @client.command()
 async def del_chanl(ctx, channel_name):
     guild = ctx.guild
 
-    if ctx.message.author.guild_permissions.administrator or guild_permissions.manage_channels:
+    if ctx.message.author.guild_permissions.administrator or ctx.message.author.guild_permissions.manage_channels: #perms can be changed
         existing_channel = discord.utils.get(guild.channels, name=channel_name)
         if existing_channel is not None:
             await existing_channel.delete()
-            await ctx.author.send(f"The channel `{channel_name}` has been succesfully deleted!")
+            embed = discord.Embed(title="Success.", description=f"The channel `{channel_name}` has been succesfully deleted!", color=discord.Color.green())
+            await ctx.send(embed=embed)
         else:
-            await ctx.send(f'No channel named, "{channel_name}", was found')
+            embed = discord.Embed(title="Error!.", description=f"The channel `{channel_name}` could not be found or doesn't exist.", color=discord.Color.red())
+            await ctx.send(embed=embed)
         await asyncio.sleep(20)
         await ctx.message.delete()
 
+        
+        
 client.run('BotTokenHere')
